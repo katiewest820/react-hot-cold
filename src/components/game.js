@@ -8,19 +8,6 @@ import StatusSection from './status-section';
 import InfoSection from './info-section';
 
 export class Game extends React.Component {
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     guesses: [],
-  //     feedback: 'Make your guess!',
-  //     auralStatus: '',
-  //     correctAnswer: Math.round(Math.random() * 100) + 1
-  //   };
-  // }
-
-
-
-   
 
   addGuess(guess){
       store.dispatch(userGuess(guess))
@@ -45,43 +32,28 @@ export class Game extends React.Component {
   makeGuess(guess) {
     guess = parseInt(guess, 10);
     if (isNaN(guess)) {
-      //this.setState({ feedback: 'Please enter a valid number' });
       this.feedback('Please enter a valid number')
       return;
     }else{
       this.addGuess(guess)
-      console.log(guess)
     }
 
     let myState = store.getState()
-    console.log(myState.correctAns)
     const difference = Math.abs(guess - myState.correctAns);
 
     let feedback;
     if (difference >= 50) {
-      //feedback = 'You\'re Ice Cold...';
       this.feedback('You\'re Ice Cold...')
     } else if (difference >= 30) {
       this.feedback('You\'re Cold...')
-      //feedback = 'You\'re Cold...';
     } else if (difference >= 10) {
       this.feedback('You\'re Warm.')
-      //feedback = 'You\'re Warm.';
     } else if (difference >= 1) {
       this.feedback('You\'re Hot!')
-      //feedback = 'You\'re Hot!';
     } else {
-      //feedback = 'You got it!';
       this.feedback('You got it!')
      
-    }
-
-    // this.setState({
-    //   feedback,
-    //   guesses: [...this.state.guesses, guess]
-    // });
-
-    
+    } 
 
     // We typically wouldn't touch the DOM directly like this in React
     // but this is the best way to update the title of the page,
@@ -103,8 +75,6 @@ export class Game extends React.Component {
       auralStatus += ` ${pluralize ? 'In order of most- to least-recent, they are' : 'It was'}: ${guesses.reverse().join(', ')}`;
     }
 
-
-    //this.setState({ auralStatus });
     this.auralStatus(auralStatus)
   }
 
@@ -138,7 +108,6 @@ const mapStateToProps = state => ({
   guesses: state.guesses,
   auralStatus: state.auralStatus,
   feedback: state.feedback,
-  //correctAns: state.correctAns
 });
 
 export default connect(mapStateToProps)(Game);

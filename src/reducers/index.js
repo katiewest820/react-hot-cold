@@ -30,9 +30,6 @@ export const gameReducer = (state=initialState, action) => {
     })
   }
   else if(action.type === FEEDBACK){
-    
-    console.log(action)
-    console.log(state)
     return Object.assign({}, state, {
       feedback: action.payload
     })
