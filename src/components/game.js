@@ -1,56 +1,87 @@
 import React from 'react';
-
+import {connect} from 'react-redux';
+import {userGuess, feedback, auralStatus, correctAnswer} from '../actions';
+import store from '../store';
 import Header from './header';
 import GuessSection from './guess-section';
 import StatusSection from './status-section';
 import InfoSection from './info-section';
 
-export default class Game extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      guesses: [],
-      feedback: 'Make your guess!',
-      auralStatus: '',
-      correctAnswer: Math.round(Math.random() * 100) + 1
-    };
+export class Game extends React.Component {
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     guesses: [],
+  //     feedback: 'Make your guess!',
+  //     auralStatus: '',
+  //     correctAnswer: Math.round(Math.random() * 100) + 1
+  //   };
+  // }
+
+
+
+   
+
+  addGuess(guess){
+      store.dispatch(userGuess(guess))
+  }
+
+  feedback(msg){
+    store.dispatch(feedback(msg))
+  }
+
+  auralStatus(auralMsg){
+    store.dispatch(auralStatus(auralMsg))
+  }
+
+  correctAnswer(){
+    store.dispatch(correctAnswer())
   }
 
   restartGame() {
-    this.setState({
-      guesses: [],
-      feedback: 'Make your guess!',
-      auralStatus: '',
-      correctAnswer: Math.floor(Math.random() * 100) + 1
-    });
-  }
+    this.correctAnswer()
+   }
 
   makeGuess(guess) {
     guess = parseInt(guess, 10);
     if (isNaN(guess)) {
-      this.setState({ feedback: 'Please enter a valid number' });
+      //this.setState({ feedback: 'Please enter a valid number' });
+      this.feedback('Please enter a valid number')
       return;
+    }else{
+      this.addGuess(guess)
+      console.log(guess)
     }
 
-    const difference = Math.abs(guess - this.state.correctAnswer);
+    let myState = store.getState()
+    console.log(myState.correctAns)
+    const difference = Math.abs(guess - myState.correctAns);
 
     let feedback;
     if (difference >= 50) {
-      feedback = 'You\'re Ice Cold...';
+      //feedback = 'You\'re Ice Cold...';
+      this.feedback('You\'re Ice Cold...')
     } else if (difference >= 30) {
-      feedback = 'You\'re Cold...';
+      this.feedback('You\'re Cold...')
+      //feedback = 'You\'re Cold...';
     } else if (difference >= 10) {
-      feedback = 'You\'re Warm.';
+      this.feedback('You\'re Warm.')
+      //feedback = 'You\'re Warm.';
     } else if (difference >= 1) {
-      feedback = 'You\'re Hot!';
+      this.feedback('You\'re Hot!')
+      //feedback = 'You\'re Hot!';
     } else {
-      feedback = 'You got it!';
+      //feedback = 'You got it!';
+      this.feedback('You got it!')
+     
     }
 
-    this.setState({
-      feedback,
-      guesses: [...this.state.guesses, guess]
-    });
+    // this.setState({
+    //   feedback,
+    //   guesses: [...this.state.guesses, guess]
+    // });
+
+    
 
     // We typically wouldn't touch the DOM directly like this in React
     // but this is the best way to update the title of the page,
@@ -60,7 +91,7 @@ export default class Game extends React.Component {
   }
 
   generateAuralUpdate() {
-    const { guesses, feedback } = this.state;
+    const { guesses, feedback } = store.getState()
 
     // If there's not exactly 1 guess, we want to
     // pluralize the nouns in this aural update.
@@ -73,11 +104,12 @@ export default class Game extends React.Component {
     }
 
 
-    this.setState({ auralStatus });
+    //this.setState({ auralStatus });
+    this.auralStatus(auralStatus)
   }
 
   render() {
-    const { feedback, guesses, auralStatus } = this.state;
+    const { feedback, guesses, auralStatus } = store.getState()
     const guessCount = guesses.length;
 
     return (
@@ -101,3 +133,12 @@ export default class Game extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  guesses: state.guesses,
+  auralStatus: state.auralStatus,
+  feedback: state.feedback,
+  //correctAns: state.correctAns
+});
+
+export default connect(mapStateToProps)(Game);
